@@ -37,10 +37,22 @@ app.get('/read/usernames', (req, res) => {
   res.send(usernames);
 });
 
-app.use(express.json());
+app.use('read/username', addMsgToRequest);
+app.get('/read/username/:name', (req, res) => {
+  let name = req.params.name;
+  let users_with_name = req.users.filter(function(user) {
+    return user.username === name;
+  });
+  console.log(users_with_name);
+  if(users_with_name.length === 0) {
+    res.send({
+      error: {message: `${name} not found`, status: 404}
+    });
+  }
+});
+
 app.use(express.urlencoded({ extended: true }));
 app.use('/write/adduser', addMsgToRequest);
-
 app.post('/write/adduser', (req, res) => {
   let newuser = req.body;
   req.users.push(newuser);
